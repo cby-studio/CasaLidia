@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Casa Lidia Room Availability</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Casa Lidia</p>
+          <h1>Room Availability</h1>
+        </div>
+        <div class="view-toggle" aria-label="Calendar view">
+          <button class="toggle-button active" type="button" data-view="month">Month</button>
+          <button class="toggle-button" type="button" data-view="week">Week</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="booking-panel" aria-labelledby="booking-title">
+          <div class="panel-heading">
+            <h2 id="booking-title">Booking</h2>
+            <button class="ghost-button" id="clear-form" type="button">New</button>
+          </div>
+
+          <form id="booking-form" autocomplete="off">
+            <input type="hidden" id="booking-id" />
+
+            <label>
+              Room
+              <select id="room" required></select>
+            </label>
+
+            <div class="date-row">
+              <label>
+                From
+                <input id="start-date" type="date" required />
+              </label>
+              <label>
+                To
+                <input id="end-date" type="date" required />
+              </label>
+            </div>
+
+            <label>
+              Tourist name
+              <input id="guest-name" type="text" placeholder="Name" required />
+            </label>
+
+            <label>
+              Phone
+              <input id="phone" type="tel" placeholder="Phone number" required />
+            </label>
+
+            <label>
+              People
+              <input id="people" type="number" min="1" max="12" value="2" required />
+            </label>
+
+            <label>
+              Notes
+              <textarea id="notes" rows="3" placeholder="Optional"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="primary-button" type="submit">Save Booking</button>
+              <button class="danger-button hidden" id="delete-booking" type="button">Delete</button>
+            </div>
+          </form>
+
+          <div class="booking-list" aria-labelledby="bookings-title">
+            <h2 id="bookings-title">Upcoming</h2>
+            <div id="booking-list"></div>
+          </div>
+        </section>
+
+        <section class="calendar-panel" aria-labelledby="calendar-title">
+          <div class="calendar-toolbar">
+            <button class="icon-button" id="previous-range" type="button" aria-label="Previous range">&lt;</button>
+            <div>
+              <h2 id="calendar-title"></h2>
+              <p id="range-subtitle"></p>
+            </div>
+            <button class="icon-button" id="next-range" type="button" aria-label="Next range">&gt;</button>
+          </div>
+
+          <div class="legend">
+            <span><i class="legend-free"></i>Available</span>
+            <span><i class="legend-occupied"></i>Unavailable</span>
+          </div>
+
+          <div class="calendar-scroll">
+            <div id="calendar-grid" class="calendar-grid" role="grid"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
