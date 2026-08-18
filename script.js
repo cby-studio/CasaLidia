@@ -48,15 +48,10 @@ const TRANSLATIONS = {
   unavailable: "Indisponibil",
   weeklyCalendar: "Calendar săptămânal",
   noUpcoming: "Nu există rezervări viitoare.",
-  exportBookings: "Export",
-  importBookings: "Import",
   free: "Liber",
   bookingSaved: "Rezervarea a fost salvată.",
   bookingDeleted: "Rezervarea a fost ștearsă.",
   backupRestored: "Rezervările au fost restaurate din backup-ul local.",
-  exportReady: "Exportul rezervărilor a fost descărcat.",
-  importComplete: "Rezervările importate au fost adăugate.",
-  importInvalid: "Fișierul nu conține rezervări valide.",
   storageError: "Rezervările nu au putut fi salvate în acest browser.",
   serverSyncError: "Sincronizarea cu serverul nu este disponibilă. Backup-ul local este salvat.",
   serverSynced: "Rezervările sunt salvate pe server.",
@@ -104,9 +99,6 @@ const elements = {
   toggleBookingPanel: document.querySelector("#toggle-booking-panel"),
   bookingPanel: document.querySelector(".booking-panel"),
   deleteBooking: document.querySelector("#delete-booking"),
-  exportBookings: document.querySelector("#export-bookings"),
-  importBookings: document.querySelector("#import-bookings"),
-  importFile: document.querySelector("#import-file"),
   bookingList: document.querySelector("#booking-list"),
   toast: document.querySelector("#toast"),
 };
@@ -182,9 +174,6 @@ function bindEvents() {
   });
   elements.toggleBookingPanel.addEventListener("click", toggleBookingPanel);
   elements.deleteBooking.addEventListener("click", deleteSelectedBooking);
-  elements.exportBookings.addEventListener("click", exportBookings);
-  elements.importBookings.addEventListener("click", () => elements.importFile.click());
-  elements.importFile.addEventListener("change", importBookings);
 }
 
 function render() {
@@ -424,6 +413,13 @@ function expandBookingPanel() {
   renderBookingPanelState();
 }
 
+function collapseBookingPanel() {
+  if (state.bookingPanelCollapsed) return;
+
+  state.bookingPanelCollapsed = true;
+  renderBookingPanelState();
+}
+
 function saveBooking() {
   const booking = {
     id: elements.bookingId.value || createId(),
@@ -458,7 +454,7 @@ function saveBooking() {
 
   persistBookings();
   editBooking(booking.id);
-  render();
+  collapseBookingPanel();
   showToast(t("bookingSaved"));
 }
 
@@ -488,44 +484,6 @@ function deleteSelectedBooking() {
   resetForm();
   render();
   showToast(t("bookingDeleted"));
-}
-
-function exportBookings() {
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    bookings: state.bookings,
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const link = document.createElement("a");
-
-  link.href = URL.createObjectURL(blob);
-  link.download = `casa-lidia-bookings-${toISODate(today)}.json`;
-  link.click();
-  URL.revokeObjectURL(link.href);
-  showToast(t("exportReady"));
-}
-
-async function importBookings() {
-  const file = elements.importFile.files[0];
-  if (!file) return;
-
-  try {
-    const parsedBookings = JSON.parse(await file.text());
-    const importedBookings = normalizeBookings(parsedBookings);
-    if (importedBookings.length === 0) {
-      showToast(t("importInvalid"));
-      return;
-    }
-
-    state.bookings = mergeBookings(state.bookings, importedBookings);
-    persistBookings();
-    render();
-    showToast(t("importComplete"));
-  } catch {
-    showToast(t("importInvalid"));
-  } finally {
-    elements.importFile.value = "";
-  }
 }
 
 function resetForm() {
@@ -727,35 +685,6 @@ function normalizeBookings(value) {
         booking.guestName,
     )
     .sort((a, b) => a.startDate.localeCompare(b.startDate));
-}
-
-function mergeBookings(currentBookings, importedBookings) {
-  const mergedBookings = [...currentBookings];
-
-  importedBookings.forEach((importedBooking) => {
-    const existingIndex = mergedBookings.findIndex((booking) => booking.id === importedBooking.id);
-    if (existingIndex >= 0) {
-      mergedBookings[existingIndex] = importedBooking;
-      return;
-    }
-
-    const hasOverlap = mergedBookings.some(
-      (booking) =>
-        booking.roomId === importedBooking.roomId &&
-        rangesOverlap(
-          booking.startDate,
-          booking.endDate,
-          importedBooking.startDate,
-          importedBooking.endDate,
-        ),
-    );
-
-    if (!hasOverlap) {
-      mergedBookings.push(importedBooking);
-    }
-  });
-
-  return mergedBookings.sort((a, b) => a.startDate.localeCompare(b.startDate));
 }
 
 function getMonthDates(date) {

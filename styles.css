@@ -312,21 +312,6 @@ textarea:focus {
   gap: 10px;
 }
 
-.data-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.small-button {
-  min-height: 34px;
-  padding: 0 10px;
-  font-size: 0.78rem;
-}
-
-.file-input {
-  display: none;
-}
-
 #booking-list {
   display: grid;
   gap: 8px;
@@ -703,11 +688,6 @@ textarea:focus {
   .booking-list-heading {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .data-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
   }
 }
 
