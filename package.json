@@ -1,0 +1,13 @@
+{
+  "name": "casa-lidia",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Casa Lidia room availability app with a small file-backed Node backend.",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check script.js && node --check server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

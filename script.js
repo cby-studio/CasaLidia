@@ -10,8 +10,11 @@ const ROOMS = [
 ];
 
 const STORAGE_KEY = "casa-lidia-bookings";
+const BACKUP_STORAGE_KEY = "casa-lidia-bookings-backup";
+const API_BOOKINGS_ENDPOINT = "/api/bookings";
 const LANGUAGE_STORAGE_KEY = "casa-lidia-language";
 const ACCESS_STORAGE_KEY = "casa-lidia-access-granted";
+const ACCESS_HASH_STORAGE_KEY = "casa-lidia-access-hash";
 const ACCESS_CODE_HASH = "44b350ed060a41a1af57c7d07ed0aca3039777404d3a09d0380e68b6977d9874";
 const TRANSLATIONS = {
   en: {
@@ -48,9 +51,18 @@ const TRANSLATIONS = {
     unavailable: "Unavailable",
     weeklyCalendar: "Weekly Calendar",
     noUpcoming: "No upcoming bookings.",
+    exportBookings: "Export",
+    importBookings: "Import",
     free: "Free",
     bookingSaved: "Booking saved.",
     bookingDeleted: "Booking deleted.",
+    backupRestored: "Bookings were restored from the local backup.",
+    exportReady: "Bookings export downloaded.",
+    importComplete: "Imported bookings were added.",
+    importInvalid: "That file does not contain valid bookings.",
+    storageError: "Bookings could not be saved in this browser.",
+    serverSyncError: "Server sync is not available. Local backup is still saved.",
+    serverSynced: "Bookings are saved on the server.",
     invalidDateRange: "End date must be the same day or after the start date.",
     overlap: "That room is already unavailable for one or more selected days.",
     person: "person",
@@ -90,9 +102,18 @@ const TRANSLATIONS = {
     unavailable: "Indisponibil",
     weeklyCalendar: "Calendar săptămânal",
     noUpcoming: "Nu există rezervări viitoare.",
+    exportBookings: "Export",
+    importBookings: "Import",
     free: "Liber",
     bookingSaved: "Rezervarea a fost salvată.",
     bookingDeleted: "Rezervarea a fost ștearsă.",
+    backupRestored: "Rezervările au fost restaurate din backup-ul local.",
+    exportReady: "Exportul rezervărilor a fost descărcat.",
+    importComplete: "Rezervările importate au fost adăugate.",
+    importInvalid: "Fișierul nu conține rezervări valide.",
+    storageError: "Rezervările nu au putut fi salvate în acest browser.",
+    serverSyncError: "Sincronizarea cu serverul nu este disponibilă. Backup-ul local este salvat.",
+    serverSynced: "Rezervările sunt salvate pe server.",
     invalidDateRange: "Data de final trebuie să fie în aceeași zi sau după data de început.",
     overlap: "Camera este deja indisponibilă pentru una sau mai multe zile selectate.",
     person: "persoană",
@@ -108,7 +129,9 @@ const state = {
   selectedDate: toISODate(today),
   language: loadLanguage(),
   accessGranted: sessionStorage.getItem(ACCESS_STORAGE_KEY) === "true",
+  accessHash: sessionStorage.getItem(ACCESS_HASH_STORAGE_KEY) || "",
   bookingPanelCollapsed: window.matchMedia("(max-width: 920px)").matches,
+  serverAvailable: false,
 };
 
 const elements = {
@@ -137,6 +160,9 @@ const elements = {
   toggleBookingPanel: document.querySelector("#toggle-booking-panel"),
   bookingPanel: document.querySelector(".booking-panel"),
   deleteBooking: document.querySelector("#delete-booking"),
+  exportBookings: document.querySelector("#export-bookings"),
+  importBookings: document.querySelector("#import-bookings"),
+  importFile: document.querySelector("#import-file"),
   bookingList: document.querySelector("#booking-list"),
   toast: document.querySelector("#toast"),
 };
@@ -148,6 +174,9 @@ function initialize() {
   bindEvents();
   resetForm();
   render();
+  if (state.accessGranted) {
+    hydrateBookingsFromServer();
+  }
 }
 
 function populateRooms() {
@@ -217,6 +246,9 @@ function bindEvents() {
   });
   elements.toggleBookingPanel.addEventListener("click", toggleBookingPanel);
   elements.deleteBooking.addEventListener("click", deleteSelectedBooking);
+  elements.exportBookings.addEventListener("click", exportBookings);
+  elements.importBookings.addEventListener("click", () => elements.importFile.click());
+  elements.importFile.addEventListener("change", importBookings);
 }
 
 function render() {
@@ -445,9 +477,12 @@ async function unlockApp() {
   }
 
   state.accessGranted = true;
+  state.accessHash = accessCodeHash;
   sessionStorage.setItem(ACCESS_STORAGE_KEY, "true");
+  sessionStorage.setItem(ACCESS_HASH_STORAGE_KEY, accessCodeHash);
   elements.accessError.textContent = "";
   render();
+  hydrateBookingsFromServer();
 }
 
 function toggleBookingPanel() {
@@ -528,6 +563,44 @@ function deleteSelectedBooking() {
   showToast(t("bookingDeleted"));
 }
 
+function exportBookings() {
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    bookings: state.bookings,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+
+  link.href = URL.createObjectURL(blob);
+  link.download = `casa-lidia-bookings-${toISODate(today)}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  showToast(t("exportReady"));
+}
+
+async function importBookings() {
+  const file = elements.importFile.files[0];
+  if (!file) return;
+
+  try {
+    const parsedBookings = JSON.parse(await file.text());
+    const importedBookings = normalizeBookings(parsedBookings);
+    if (importedBookings.length === 0) {
+      showToast(t("importInvalid"));
+      return;
+    }
+
+    state.bookings = mergeBookings(state.bookings, importedBookings);
+    persistBookings();
+    render();
+    showToast(t("importComplete"));
+  } catch {
+    showToast(t("importInvalid"));
+  } finally {
+    elements.importFile.value = "";
+  }
+}
+
 function resetForm() {
   elements.bookingId.value = "";
   elements.room.value = ROOMS[0].id;
@@ -565,17 +638,156 @@ function getVisibleBookings(roomId, rangeStart, rangeEnd) {
   );
 }
 
-function loadBookings() {
+async function hydrateBookingsFromServer() {
+  const localBookings = loadBookings();
+  const serverBookings = await fetchServerBookings();
+
+  if (!serverBookings) return;
+
+  state.serverAvailable = true;
+
+  if (serverBookings.length === 0 && localBookings.length > 0) {
+    state.bookings = localBookings;
+    persistBookings();
+    render();
+    return;
+  }
+
+  state.bookings = serverBookings;
+  persistBookingsLocally();
+  render();
+}
+
+function persistBookings() {
+  persistBookingsLocally();
+  saveBookingsToServer();
+}
+
+function persistBookingsLocally() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(parsed) ? parsed : [];
+    const serializedBookings = JSON.stringify(state.bookings);
+    localStorage.setItem(STORAGE_KEY, serializedBookings);
+    localStorage.setItem(BACKUP_STORAGE_KEY, serializedBookings);
+  } catch {
+    showToast(t("storageError"));
+  }
+}
+
+async function fetchServerBookings() {
+  try {
+    const response = await fetch(API_BOOKINGS_ENDPOINT, {
+      cache: "no-store",
+      headers: createApiHeaders({ Accept: "application/json" }),
+    });
+
+    if (!response.ok) return null;
+
+    return normalizeBookings(await response.json());
+  } catch {
+    return null;
+  }
+}
+
+async function saveBookingsToServer() {
+  try {
+    const response = await fetch(API_BOOKINGS_ENDPOINT, {
+      method: "PUT",
+      headers: createApiHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(state.bookings),
+    });
+
+    if (!response.ok) throw new Error("Server rejected bookings");
+    state.serverAvailable = true;
+  } catch {
+    state.serverAvailable = false;
+    showToast(t("serverSyncError"));
+  }
+}
+
+function createApiHeaders(headers = {}) {
+  return {
+    ...headers,
+    "X-Access-Code-Hash": state.accessHash,
+  };
+}
+
+function loadBookings() {
+  const primaryBookings = readStoredBookings(STORAGE_KEY);
+  if (primaryBookings.length > 0) return primaryBookings;
+
+  const backupBookings = readStoredBookings(BACKUP_STORAGE_KEY);
+  if (backupBookings.length > 0) {
+    return backupBookings;
+  }
+
+  return [];
+}
+
+function readStoredBookings(key) {
+  try {
+    const rawBookings = localStorage.getItem(key);
+    if (!rawBookings) return [];
+
+    const parsedBookings = JSON.parse(rawBookings);
+    return normalizeBookings(parsedBookings);
   } catch {
     return [];
   }
 }
 
-function persistBookings() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.bookings));
+function normalizeBookings(value) {
+  const rawBookings = Array.isArray(value) ? value : value?.bookings;
+  if (!Array.isArray(rawBookings)) return [];
+
+  return rawBookings
+    .map((booking) => ({
+      id: typeof booking.id === "string" && booking.id ? booking.id : createId(),
+      roomId: typeof booking.roomId === "string" ? booking.roomId : "",
+      startDate: typeof booking.startDate === "string" ? booking.startDate : "",
+      endDate: typeof booking.endDate === "string" ? booking.endDate : "",
+      guestName: typeof booking.guestName === "string" ? booking.guestName : "",
+      phone: typeof booking.phone === "string" ? booking.phone : "",
+      people: Number(booking.people) || 1,
+      notes: typeof booking.notes === "string" ? booking.notes : "",
+    }))
+    .filter(
+      (booking) =>
+        ROOMS.some((room) => room.id === booking.roomId) &&
+        isISODate(booking.startDate) &&
+        isISODate(booking.endDate) &&
+        booking.endDate >= booking.startDate &&
+        booking.guestName,
+    )
+    .sort((a, b) => a.startDate.localeCompare(b.startDate));
+}
+
+function mergeBookings(currentBookings, importedBookings) {
+  const mergedBookings = [...currentBookings];
+
+  importedBookings.forEach((importedBooking) => {
+    const existingIndex = mergedBookings.findIndex((booking) => booking.id === importedBooking.id);
+    if (existingIndex >= 0) {
+      mergedBookings[existingIndex] = importedBooking;
+      return;
+    }
+
+    const hasOverlap = mergedBookings.some(
+      (booking) =>
+        booking.roomId === importedBooking.roomId &&
+        rangesOverlap(
+          booking.startDate,
+          booking.endDate,
+          importedBooking.startDate,
+          importedBooking.endDate,
+        ),
+    );
+
+    if (!hasOverlap) {
+      mergedBookings.push(importedBooking);
+    }
+  });
+
+  return mergedBookings.sort((a, b) => a.startDate.localeCompare(b.startDate));
 }
 
 function loadLanguage() {
@@ -622,6 +834,10 @@ function toISODate(date) {
 function parseISODate(value) {
   const [year, month, day] = value.split("-").map(Number);
   return new Date(year, month - 1, day);
+}
+
+function isISODate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
 
 function rangesOverlap(startA, endA, startB, endB) {

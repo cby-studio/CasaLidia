@@ -10,3 +10,5 @@ build/
 .parcel-cache/
 .vscode/
 .idea/
+data/*.json
+data/*.tmp

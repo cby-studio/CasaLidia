@@ -120,7 +120,14 @@
             </form>
 
             <div class="booking-list" aria-labelledby="bookings-title">
-              <h2 id="bookings-title" data-i18n="upcoming">Upcoming</h2>
+              <div class="booking-list-heading">
+                <h2 id="bookings-title" data-i18n="upcoming">Upcoming</h2>
+                <div class="data-actions">
+                  <button class="ghost-button small-button" id="export-bookings" type="button" data-i18n="exportBookings">Export</button>
+                  <button class="ghost-button small-button" id="import-bookings" type="button" data-i18n="importBookings">Import</button>
+                  <input class="file-input" id="import-file" type="file" accept="application/json,.json" />
+                </div>
+              </div>
               <div id="booking-list"></div>
             </div>
           </div>
