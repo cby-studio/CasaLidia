@@ -49,7 +49,7 @@ const TRANSLATIONS = {
     week: "Săptămână",
     booking: "Rezervare",
     newBooking: "Nou",
-    room: "Cameră",
+    room: "Camera",
     from: "De la",
     to: "Până la",
     touristName: "Nume turist",
