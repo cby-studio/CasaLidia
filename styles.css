@@ -761,13 +761,13 @@ textarea:focus {
   select {
     height: 34px;
     padding: 0 8px;
-    font-size: 0.86rem;
+    font-size: 16px;
   }
 
   textarea {
     min-height: 52px;
     padding: 7px 8px;
-    font-size: 0.86rem;
+    font-size: 16px;
   }
 
   .date-row {
