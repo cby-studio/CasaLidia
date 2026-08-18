@@ -11,85 +11,91 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Casa Lidia</p>
-          <h1>Room Availability</h1>
+          <h1 data-i18n="appTitle">Room Availability</h1>
         </div>
-        <div class="view-toggle" aria-label="Calendar view">
-          <button class="toggle-button active" type="button" data-view="month">Month</button>
-          <button class="toggle-button" type="button" data-view="week">Week</button>
+        <div class="header-actions">
+          <div class="language-toggle" aria-label="Language">
+            <button class="language-button active" type="button" data-language="en">EN</button>
+            <button class="language-button" type="button" data-language="ro">RO</button>
+          </div>
+          <div class="view-toggle" aria-label="Calendar view" data-i18n-aria="calendarView">
+            <button class="toggle-button active" type="button" data-view="month" data-i18n="month">Month</button>
+            <button class="toggle-button" type="button" data-view="week" data-i18n="week">Week</button>
+          </div>
         </div>
       </header>
 
       <main class="workspace">
         <section class="booking-panel" aria-labelledby="booking-title">
           <div class="panel-heading">
-            <h2 id="booking-title">Booking</h2>
-            <button class="ghost-button" id="clear-form" type="button">New</button>
+            <h2 id="booking-title" data-i18n="booking">Booking</h2>
+            <button class="ghost-button" id="clear-form" type="button" data-i18n="newBooking">New</button>
           </div>
 
           <form id="booking-form" autocomplete="off">
             <input type="hidden" id="booking-id" />
 
             <label>
-              Room
+              <span data-i18n="room">Room</span>
               <select id="room" required></select>
             </label>
 
             <div class="date-row">
               <label>
-                From
+                <span data-i18n="from">From</span>
                 <input id="start-date" type="date" required />
               </label>
               <label>
-                To
+                <span data-i18n="to">To</span>
                 <input id="end-date" type="date" required />
               </label>
             </div>
 
             <label>
-              Tourist name
-              <input id="guest-name" type="text" placeholder="Name" required />
+              <span data-i18n="touristName">Tourist name</span>
+              <input id="guest-name" type="text" placeholder="Name" data-i18n-placeholder="namePlaceholder" required />
             </label>
 
             <label>
-              Phone
-              <input id="phone" type="tel" placeholder="Phone number" required />
+              <span data-i18n="phone">Phone</span>
+              <input id="phone" type="tel" placeholder="Phone number" data-i18n-placeholder="phonePlaceholder" required />
             </label>
 
             <label>
-              People
+              <span data-i18n="people">People</span>
               <input id="people" type="number" min="1" max="12" value="2" required />
             </label>
 
             <label>
-              Notes
-              <textarea id="notes" rows="3" placeholder="Optional"></textarea>
+              <span data-i18n="notes">Notes</span>
+              <textarea id="notes" rows="3" placeholder="Optional" data-i18n-placeholder="optional"></textarea>
             </label>
 
             <div class="form-actions">
-              <button class="primary-button" type="submit">Save Booking</button>
-              <button class="danger-button hidden" id="delete-booking" type="button">Delete</button>
+              <button class="primary-button" type="submit" data-i18n="saveBooking">Save Booking</button>
+              <button class="danger-button hidden" id="delete-booking" type="button" data-i18n="deleteBooking">Delete</button>
             </div>
           </form>
 
           <div class="booking-list" aria-labelledby="bookings-title">
-            <h2 id="bookings-title">Upcoming</h2>
+            <h2 id="bookings-title" data-i18n="upcoming">Upcoming</h2>
             <div id="booking-list"></div>
           </div>
         </section>
 
         <section class="calendar-panel" aria-labelledby="calendar-title">
           <div class="calendar-toolbar">
-            <button class="icon-button" id="previous-range" type="button" aria-label="Previous range">&lt;</button>
+            <button class="icon-button" id="previous-range" type="button" aria-label="Previous range" data-i18n-aria="previousRange">&lt;</button>
             <div>
               <h2 id="calendar-title"></h2>
               <p id="range-subtitle"></p>
             </div>
-            <button class="icon-button" id="next-range" type="button" aria-label="Next range">&gt;</button>
+            <button class="icon-button" id="next-range" type="button" aria-label="Next range" data-i18n-aria="nextRange">&gt;</button>
           </div>
 
           <div class="legend">
-            <span><i class="legend-free"></i>Available</span>
-            <span><i class="legend-occupied"></i>Unavailable</span>
+            <span><i class="legend-free"></i><span data-i18n="available">Available</span></span>
+            <span><i class="legend-occupied"></i><span data-i18n="unavailable">Unavailable</span></span>
           </div>
 
           <div class="calendar-scroll">

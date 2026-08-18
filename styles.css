@@ -83,9 +83,15 @@ h2 {
   line-height: 1.2;
 }
 
-.view-toggle {
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.view-toggle,
+.language-toggle {
   display: grid;
-  grid-template-columns: repeat(2, minmax(82px, 1fr));
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -93,7 +99,16 @@ h2 {
   box-shadow: 0 8px 24px rgba(29, 45, 39, 0.08);
 }
 
+.view-toggle {
+  grid-template-columns: repeat(2, minmax(82px, 1fr));
+}
+
+.language-toggle {
+  grid-template-columns: repeat(2, 48px);
+}
+
 .toggle-button,
+.language-button,
 .ghost-button,
 .primary-button,
 .danger-button,
@@ -110,7 +125,14 @@ h2 {
   padding: 0 14px;
 }
 
-.toggle-button.active {
+.language-button {
+  background: transparent;
+  color: var(--muted);
+  padding: 0 10px;
+}
+
+.toggle-button.active,
+.language-button.active {
   background: var(--accent);
   color: #fff;
 }
@@ -213,7 +235,8 @@ textarea:focus {
 }
 
 .primary-button:hover,
-.toggle-button.active:hover {
+.toggle-button.active:hover,
+.language-button.active:hover {
   background: var(--accent-dark);
 }
 
@@ -521,6 +544,11 @@ textarea:focus {
     align-items: stretch;
     flex-direction: column;
     min-height: 0;
+  }
+
+  .header-actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .workspace {

@@ -5,6 +5,7 @@ A small static web app for managing availability across 7 bed and breakfast room
 ## Features
 
 - Monthly and weekly availability calendars
+- English and Romanian language switch
 - Seven fixed rooms
 - Single-day and multi-day bookings
 - Tourist details: name, phone number, number of people, and notes

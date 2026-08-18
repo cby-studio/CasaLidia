@@ -1,9 +1,82 @@
 const ROOMS = Array.from({ length: 7 }, (_, index) => ({
   id: `room-${index + 1}`,
-  name: `Room ${index + 1}`,
+  number: index + 1,
 }));
 
 const STORAGE_KEY = "casa-lidia-bookings";
+const LANGUAGE_STORAGE_KEY = "casa-lidia-language";
+const TRANSLATIONS = {
+  en: {
+    appTitle: "Room Availability",
+    calendarView: "Calendar view",
+    language: "Language",
+    month: "Month",
+    week: "Week",
+    booking: "Booking",
+    newBooking: "New",
+    room: "Room",
+    from: "From",
+    to: "To",
+    touristName: "Tourist name",
+    namePlaceholder: "Name",
+    phone: "Phone",
+    phonePlaceholder: "Phone number",
+    people: "People",
+    notes: "Notes",
+    optional: "Optional",
+    saveBooking: "Save Booking",
+    deleteBooking: "Delete",
+    upcoming: "Upcoming",
+    previousRange: "Previous range",
+    nextRange: "Next range",
+    available: "Available",
+    unavailable: "Unavailable",
+    weeklyCalendar: "Weekly Calendar",
+    noUpcoming: "No upcoming bookings.",
+    free: "Free",
+    bookingSaved: "Booking saved.",
+    bookingDeleted: "Booking deleted.",
+    invalidDateRange: "End date must be the same day or after the start date.",
+    overlap: "That room is already unavailable for one or more selected days.",
+    person: "person",
+    peoplePlural: "people",
+  },
+  ro: {
+    appTitle: "Disponibilitate camere",
+    calendarView: "Vizualizare calendar",
+    language: "Limbă",
+    month: "Lună",
+    week: "Săptămână",
+    booking: "Rezervare",
+    newBooking: "Nou",
+    room: "Cameră",
+    from: "De la",
+    to: "Până la",
+    touristName: "Nume turist",
+    namePlaceholder: "Nume",
+    phone: "Telefon",
+    phonePlaceholder: "Număr de telefon",
+    people: "Persoane",
+    notes: "Observații",
+    optional: "Opțional",
+    saveBooking: "Salvează rezervarea",
+    deleteBooking: "Șterge",
+    upcoming: "Urmează",
+    previousRange: "Perioada anterioară",
+    nextRange: "Perioada următoare",
+    available: "Disponibil",
+    unavailable: "Indisponibil",
+    weeklyCalendar: "Calendar săptămânal",
+    noUpcoming: "Nu există rezervări viitoare.",
+    free: "Liber",
+    bookingSaved: "Rezervarea a fost salvată.",
+    bookingDeleted: "Rezervarea a fost ștearsă.",
+    invalidDateRange: "Data de final trebuie să fie în aceeași zi sau după data de început.",
+    overlap: "Camera este deja indisponibilă pentru una sau mai multe zile selectate.",
+    person: "persoană",
+    peoplePlural: "persoane",
+  },
+};
 const today = startOfDay(new Date());
 
 const state = {
@@ -11,9 +84,11 @@ const state = {
   cursor: new Date(today.getFullYear(), today.getMonth(), 1),
   bookings: loadBookings(),
   selectedDate: toISODate(today),
+  language: loadLanguage(),
 };
 
 const elements = {
+  languageButtons: document.querySelectorAll(".language-button"),
   viewButtons: document.querySelectorAll(".toggle-button"),
   calendarGrid: document.querySelector("#calendar-grid"),
   calendarTitle: document.querySelector("#calendar-title"),
@@ -45,12 +120,22 @@ function initialize() {
 }
 
 function populateRooms() {
+  const selectedRoom = elements.room.value || ROOMS[0].id;
   elements.room.innerHTML = ROOMS.map(
-    (room) => `<option value="${room.id}">${room.name}</option>`,
+    (room) => `<option value="${room.id}">${getRoomName(room)}</option>`,
   ).join("");
+  elements.room.value = selectedRoom;
 }
 
 function bindEvents() {
+  elements.languageButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.language = button.dataset.language;
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, state.language);
+      render();
+    });
+  });
+
   elements.viewButtons.forEach((button) => {
     button.addEventListener("click", () => {
       state.view = button.dataset.view;
@@ -95,9 +180,38 @@ function bindEvents() {
 }
 
 function render() {
+  renderStaticText();
+  renderLanguageToggle();
   renderViewToggle();
   renderCalendar();
   renderBookingList();
+}
+
+function renderStaticText() {
+  document.documentElement.lang = state.language;
+  document.title = `Casa Lidia ${t("appTitle")}`;
+
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = t(element.dataset.i18n);
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  });
+
+  document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+    element.setAttribute("aria-label", t(element.dataset.i18nAria));
+  });
+
+  const languageToggle = document.querySelector(".language-toggle");
+  languageToggle.setAttribute("aria-label", t("language"));
+  populateRooms();
+}
+
+function renderLanguageToggle() {
+  elements.languageButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.language === state.language);
+  });
 }
 
 function renderViewToggle() {
@@ -116,14 +230,16 @@ function renderCalendar() {
   elements.calendarGrid.className = `calendar-grid ${state.view}`;
   elements.calendarGrid.style.setProperty("--day-count", String(dates.length));
   elements.calendarTitle.textContent =
-    state.view === "month" ? formatMonth(state.cursor) : "Weekly Calendar";
+    state.view === "month" ? formatMonth(state.cursor) : t("weeklyCalendar");
   elements.rangeSubtitle.textContent = `${formatReadableDate(rangeStart)} - ${formatReadableDate(
     rangeEnd,
   )}`;
 
   const fragments = [];
   fragments.push(
-    `<div class="grid-cell header-cell corner-cell" role="columnheader" style="grid-row: 1; grid-column: 1;">Room</div>`,
+    `<div class="grid-cell header-cell corner-cell" role="columnheader" style="grid-row: 1; grid-column: 1;">${t(
+      "room",
+    )}</div>`,
   );
 
   dates.forEach((date, dateIndex) => {
@@ -140,8 +256,9 @@ function renderCalendar() {
 
   ROOMS.forEach((room, roomIndex) => {
     const gridRow = roomIndex + 2;
+    const roomName = getRoomName(room);
     fragments.push(
-      `<div class="grid-cell room-cell" role="rowheader" style="grid-row: ${gridRow}; grid-column: 1;">${room.name}</div>`,
+      `<div class="grid-cell room-cell" role="rowheader" style="grid-row: ${gridRow}; grid-column: 1;">${roomName}</div>`,
     );
 
     dates.forEach((date, dateIndex) => {
@@ -149,8 +266,8 @@ function renderCalendar() {
       const isoDate = toISODate(date);
       const isToday = isoDate === toISODate(today);
       const title = booking
-        ? `${room.name}: ${booking.guestName}, ${booking.people} people, ${booking.phone}`
-        : `${room.name}: available`;
+        ? `${roomName}: ${booking.guestName}, ${formatPeople(booking.people)}, ${booking.phone}`
+        : `${roomName}: ${t("available").toLowerCase()}`;
 
       fragments.push(`
         <div class="grid-cell day-cell" role="gridcell" style="grid-row: ${gridRow}; grid-column: ${
@@ -165,7 +282,7 @@ function renderCalendar() {
             title="${escapeAttribute(title)}"
           >
             <span class="day-number">${date.getDate()}</span>
-            ${booking ? "" : `<span class="cell-meta">Free</span>`}
+            ${booking ? "" : `<span class="cell-meta">${t("free")}</span>`}
           </button>
         </div>
       `);
@@ -178,8 +295,10 @@ function renderCalendar() {
       const endColumn =
         dates.findIndex((date) => toISODate(date) === minISODate(booking.endDate, rangeEndISO)) +
         3;
-      const roomName = ROOMS.find((item) => item.id === booking.roomId).name;
-      const title = `${roomName}: ${booking.guestName}, ${booking.people} people, ${booking.phone}`;
+      const bookingRoomName = getRoomName(ROOMS.find((item) => item.id === booking.roomId));
+      const title = `${bookingRoomName}: ${booking.guestName}, ${formatPeople(booking.people)}, ${
+        booking.phone
+      }`;
 
       fragments.push(`
         <button
@@ -190,7 +309,7 @@ function renderCalendar() {
           title="${escapeAttribute(title)}"
         >
           <strong>${escapeHtml(booking.guestName)}</strong>
-          <span>${booking.people} people - ${escapeHtml(booking.phone)}</span>
+          <span>${formatPeople(booking.people)} - ${escapeHtml(booking.phone)}</span>
         </button>
       `);
     });
@@ -211,7 +330,7 @@ function renderBookingList() {
     .sort((a, b) => a.startDate.localeCompare(b.startDate) || a.roomId.localeCompare(b.roomId));
 
   if (sorted.length === 0) {
-    elements.bookingList.innerHTML = `<p class="empty-state">No upcoming bookings.</p>`;
+    elements.bookingList.innerHTML = `<p class="empty-state">${t("noUpcoming")}</p>`;
     return;
   }
 
@@ -221,10 +340,10 @@ function renderBookingList() {
       return `
         <button class="booking-item" type="button" data-booking-id="${booking.id}">
           <strong>${escapeHtml(booking.guestName)}</strong>
-          <span>${room.name} - ${formatISODate(booking.startDate)} - ${formatISODate(
+          <span>${getRoomName(room)} - ${formatISODate(booking.startDate)} - ${formatISODate(
             booking.endDate,
           )}</span>
-          <span>${booking.people} people - ${escapeHtml(booking.phone)}</span>
+          <span>${formatPeople(booking.people)} - ${escapeHtml(booking.phone)}</span>
         </button>
       `;
     })
@@ -267,7 +386,7 @@ function saveBooking() {
   };
 
   if (booking.endDate < booking.startDate) {
-    showToast("End date must be the same day or after the start date.");
+    showToast(t("invalidDateRange"));
     return;
   }
 
@@ -277,7 +396,7 @@ function saveBooking() {
   });
 
   if (overlap) {
-    showToast("That room is already unavailable for one or more selected days.");
+    showToast(t("overlap"));
     return;
   }
 
@@ -289,7 +408,7 @@ function saveBooking() {
   persistBookings();
   editBooking(booking.id);
   render();
-  showToast("Booking saved.");
+  showToast(t("bookingSaved"));
 }
 
 function editBooking(id) {
@@ -316,7 +435,7 @@ function deleteSelectedBooking() {
   persistBookings();
   resetForm();
   render();
-  showToast("Booking deleted.");
+  showToast(t("bookingDeleted"));
 }
 
 function resetForm() {
@@ -367,6 +486,11 @@ function loadBookings() {
 
 function persistBookings() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.bookings));
+}
+
+function loadLanguage() {
+  const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  return TRANSLATIONS[storedLanguage] ? storedLanguage : "en";
 }
 
 function getMonthDates(date) {
@@ -430,12 +554,27 @@ function createId() {
   return `booking-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function t(key) {
+  return TRANSLATIONS[state.language][key] || TRANSLATIONS.en[key] || key;
+}
+
+function getRoomName(room) {
+  return `${t("room")} ${room.number}`;
+}
+
+function formatPeople(count) {
+  const label = Number(count) === 1 ? t("person") : t("peoplePlural");
+  return `${count} ${label}`;
+}
+
 function formatMonth(date) {
-  return new Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format(date);
+  return capitalizeFirst(
+    new Intl.DateTimeFormat(getLocale(), { month: "long", year: "numeric" }).format(date),
+  );
 }
 
 function formatReadableDate(date) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(getLocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -447,7 +586,15 @@ function formatISODate(value) {
 }
 
 function weekdayShort(date) {
-  return new Intl.DateTimeFormat("en", { weekday: "short" }).format(date);
+  return capitalizeFirst(new Intl.DateTimeFormat(getLocale(), { weekday: "short" }).format(date));
+}
+
+function getLocale() {
+  return state.language === "ro" ? "ro-RO" : "en";
+}
+
+function capitalizeFirst(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function escapeHtml(value) {
