@@ -1,9 +1,6 @@
 name: Deploy to Cloudflare Workers
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -34,4 +31,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: >-
-            deploy --message "${{ github.event.head_commit.message }}" --tag "${{ github.sha }}"
+            deploy --message "Manual GitHub Actions deploy: ${{ github.sha }}" --tag "${{ github.sha }}"

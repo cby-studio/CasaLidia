@@ -16,7 +16,6 @@ A small static web app for managing availability across 8 bed and breakfast room
 - Click an occupied date or upcoming booking to edit it
 - Browser local storage persistence
 - Small Node backend that stores bookings in `data/bookings.json`
-- Export/import backup tools
 
 ## Run
 
@@ -42,15 +41,22 @@ By default, the server binds to `127.0.0.1`. Set `HOST=0.0.0.0` only when you in
 
 ## Deploy
 
-This repo includes a GitHub Actions workflow that deploys to Cloudflare Workers on every push to `main`.
+Use Cloudflare Workers Builds as the primary deploy path. That keeps Cloudflare connected to the GitHub commit, so the Versions screen can show the commit/build link.
 
-Add these GitHub repository secrets:
+In Cloudflare, open the Worker, then go to `Settings > Builds` and connect this GitHub repository.
 
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+Recommended build settings:
+
+- Git branch: `main`
+- Build command: `npm run check`
+- Deploy command: `npm run deploy:cloudflare`
+- Root directory: leave empty
+
+Add this Cloudflare build secret:
+
 - `CLOUDFLARE_KV_NAMESPACE_ID`
 
-Then every push to `main` will run `npm run check` and deploy with Wrangler.
+The GitHub Actions workflow is kept as a manual fallback only. It does not deploy automatically on push, because that creates Wrangler-only versions in Cloudflare without a GitHub build link.
 
 The `.assetsignore` file keeps `node_modules`, backend files, and data files out of Cloudflare's static asset upload.
 
