@@ -127,8 +127,7 @@ h2 {
   gap: 10px;
 }
 
-.view-toggle,
-.language-toggle {
+.view-toggle {
   display: grid;
   padding: 4px;
   border: 1px solid var(--line);
@@ -141,12 +140,7 @@ h2 {
   grid-template-columns: repeat(2, minmax(82px, 1fr));
 }
 
-.language-toggle {
-  grid-template-columns: repeat(2, 48px);
-}
-
 .toggle-button,
-.language-button,
 .ghost-button,
 .primary-button,
 .danger-button,
@@ -163,14 +157,7 @@ h2 {
   padding: 0 14px;
 }
 
-.language-button {
-  background: transparent;
-  color: var(--muted);
-  padding: 0 10px;
-}
-
-.toggle-button.active,
-.language-button.active {
+.toggle-button.active {
   background: var(--accent);
   color: #fff;
 }
@@ -293,8 +280,7 @@ textarea:focus {
 }
 
 .primary-button:hover,
-.toggle-button.active:hover,
-.language-button.active:hover {
+.toggle-button.active:hover {
   background: var(--accent-dark);
 }
 
@@ -692,10 +678,6 @@ textarea:focus {
   .access-card-header {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .language-toggle {
-    grid-template-columns: repeat(2, 1fr);
   }
 
   .date-row,

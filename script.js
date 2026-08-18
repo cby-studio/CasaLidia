@@ -12,113 +12,58 @@ const ROOMS = [
 const STORAGE_KEY = "casa-lidia-bookings";
 const BACKUP_STORAGE_KEY = "casa-lidia-bookings-backup";
 const API_BOOKINGS_ENDPOINT = "/api/bookings";
-const LANGUAGE_STORAGE_KEY = "casa-lidia-language";
 const ACCESS_STORAGE_KEY = "casa-lidia-access-granted";
 const ACCESS_HASH_STORAGE_KEY = "casa-lidia-access-hash";
 const ACCESS_CODE_HASH = "44b350ed060a41a1af57c7d07ed0aca3039777404d3a09d0380e68b6977d9874";
 const TRANSLATIONS = {
-  en: {
-    accessTitle: "Private Access",
-    accessCode: "Access code",
-    accessCodePlaceholder: "Access code",
-    unlock: "Unlock",
-    accessError: "The access code is not correct.",
-    appTitle: "Room Availability",
-    calendarView: "Calendar view",
-    language: "Language",
-    month: "Month",
-    week: "Week",
-    booking: "Booking",
-    newBooking: "New",
-    room: "Room",
-    from: "From",
-    to: "To",
-    touristName: "Tourist name",
-    namePlaceholder: "Name",
-    phone: "Phone",
-    phonePlaceholder: "Phone number",
-    people: "People",
-    notes: "Notes",
-    optional: "Optional",
-    saveBooking: "Save Booking",
-    deleteBooking: "Delete",
-    upcoming: "Upcoming",
-    previousRange: "Previous range",
-    nextRange: "Next range",
-    minimizeReservation: "Minimize reservation",
-    expandReservation: "Expand reservation",
-    available: "Available",
-    unavailable: "Unavailable",
-    weeklyCalendar: "Weekly Calendar",
-    noUpcoming: "No upcoming bookings.",
-    exportBookings: "Export",
-    importBookings: "Import",
-    free: "Free",
-    bookingSaved: "Booking saved.",
-    bookingDeleted: "Booking deleted.",
-    backupRestored: "Bookings were restored from the local backup.",
-    exportReady: "Bookings export downloaded.",
-    importComplete: "Imported bookings were added.",
-    importInvalid: "That file does not contain valid bookings.",
-    storageError: "Bookings could not be saved in this browser.",
-    serverSyncError: "Server sync is not available. Local backup is still saved.",
-    serverSynced: "Bookings are saved on the server.",
-    invalidDateRange: "End date must be the same day or after the start date.",
-    overlap: "That room is already unavailable for one or more selected days.",
-    person: "person",
-    peoplePlural: "people",
-  },
-  ro: {
-    accessTitle: "Acces privat",
-    accessCode: "Cod de acces",
-    accessCodePlaceholder: "Cod de acces",
-    unlock: "Deblochează",
-    accessError: "Codul de acces nu este corect.",
-    appTitle: "Disponibilitate camere",
-    calendarView: "Vizualizare calendar",
-    language: "Limbă",
-    month: "Lună",
-    week: "Săptămână",
-    booking: "Rezervare",
-    newBooking: "Adaugă",
-    room: "Camera",
-    from: "De la",
-    to: "Până la",
-    touristName: "Nume turist",
-    namePlaceholder: "Nume",
-    phone: "Telefon",
-    phonePlaceholder: "Număr de telefon",
-    people: "Persoane",
-    notes: "Observații",
-    optional: "Opțional",
-    saveBooking: "Salvează rezervarea",
-    deleteBooking: "Șterge",
-    upcoming: "Urmează",
-    previousRange: "Perioada anterioară",
-    nextRange: "Perioada următoare",
-    minimizeReservation: "Minimizează rezervarea",
-    expandReservation: "Extinde rezervarea",
-    available: "Disponibil",
-    unavailable: "Indisponibil",
-    weeklyCalendar: "Calendar săptămânal",
-    noUpcoming: "Nu există rezervări viitoare.",
-    exportBookings: "Export",
-    importBookings: "Import",
-    free: "Liber",
-    bookingSaved: "Rezervarea a fost salvată.",
-    bookingDeleted: "Rezervarea a fost ștearsă.",
-    backupRestored: "Rezervările au fost restaurate din backup-ul local.",
-    exportReady: "Exportul rezervărilor a fost descărcat.",
-    importComplete: "Rezervările importate au fost adăugate.",
-    importInvalid: "Fișierul nu conține rezervări valide.",
-    storageError: "Rezervările nu au putut fi salvate în acest browser.",
-    serverSyncError: "Sincronizarea cu serverul nu este disponibilă. Backup-ul local este salvat.",
-    serverSynced: "Rezervările sunt salvate pe server.",
-    invalidDateRange: "Data de final trebuie să fie în aceeași zi sau după data de început.",
-    overlap: "Camera este deja indisponibilă pentru una sau mai multe zile selectate.",
-    person: "persoană",
-    peoplePlural: "persoane",
-  },
+  accessTitle: "Acces privat",
+  accessCode: "Cod de acces",
+  accessCodePlaceholder: "Cod de acces",
+  unlock: "Deblochează",
+  accessError: "Codul de acces nu este corect.",
+  appTitle: "Disponibilitate camere",
+  calendarView: "Vizualizare calendar",
+  month: "Lună",
+  week: "Săptămână",
+  booking: "Rezervare",
+  newBooking: "Adaugă",
+  room: "Camera",
+  from: "De la",
+  to: "Până la",
+  touristName: "Nume turist",
+  namePlaceholder: "Nume",
+  phone: "Telefon",
+  phonePlaceholder: "Număr de telefon",
+  people: "Persoane",
+  notes: "Observații",
+  optional: "Opțional",
+  saveBooking: "Salvează rezervarea",
+  deleteBooking: "Șterge",
+  upcoming: "Urmează",
+  previousRange: "Perioada anterioară",
+  nextRange: "Perioada următoare",
+  minimizeReservation: "Minimizează rezervarea",
+  expandReservation: "Extinde rezervarea",
+  available: "Disponibil",
+  unavailable: "Indisponibil",
+  weeklyCalendar: "Calendar săptămânal",
+  noUpcoming: "Nu există rezervări viitoare.",
+  exportBookings: "Export",
+  importBookings: "Import",
+  free: "Liber",
+  bookingSaved: "Rezervarea a fost salvată.",
+  bookingDeleted: "Rezervarea a fost ștearsă.",
+  backupRestored: "Rezervările au fost restaurate din backup-ul local.",
+  exportReady: "Exportul rezervărilor a fost descărcat.",
+  importComplete: "Rezervările importate au fost adăugate.",
+  importInvalid: "Fișierul nu conține rezervări valide.",
+  storageError: "Rezervările nu au putut fi salvate în acest browser.",
+  serverSyncError: "Sincronizarea cu serverul nu este disponibilă. Backup-ul local este salvat.",
+  serverSynced: "Rezervările sunt salvate pe server.",
+  invalidDateRange: "Data de final trebuie să fie în aceeași zi sau după data de început.",
+  overlap: "Camera este deja indisponibilă pentru una sau mai multe zile selectate.",
+  person: "persoană",
+  peoplePlural: "persoane",
 };
 const today = startOfDay(new Date());
 
@@ -127,7 +72,6 @@ const state = {
   cursor: new Date(today.getFullYear(), today.getMonth(), 1),
   bookings: loadBookings(),
   selectedDate: toISODate(today),
-  language: loadLanguage(),
   accessGranted: sessionStorage.getItem(ACCESS_STORAGE_KEY) === "true",
   accessHash: sessionStorage.getItem(ACCESS_HASH_STORAGE_KEY) || "",
   bookingPanelCollapsed: window.matchMedia("(max-width: 920px)").matches,
@@ -140,7 +84,6 @@ const elements = {
   accessForm: document.querySelector("#access-form"),
   accessCode: document.querySelector("#access-code"),
   accessError: document.querySelector("#access-error"),
-  languageButtons: document.querySelectorAll(".language-button"),
   viewButtons: document.querySelectorAll(".toggle-button"),
   calendarGrid: document.querySelector("#calendar-grid"),
   calendarTitle: document.querySelector("#calendar-title"),
@@ -188,14 +131,6 @@ function populateRooms() {
 }
 
 function bindEvents() {
-  elements.languageButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.language = button.dataset.language;
-      localStorage.setItem(LANGUAGE_STORAGE_KEY, state.language);
-      render();
-    });
-  });
-
   elements.accessForm.addEventListener("submit", (event) => {
     event.preventDefault();
     unlockApp();
@@ -205,9 +140,9 @@ function bindEvents() {
     button.addEventListener("click", () => {
       state.view = button.dataset.view;
       if (state.view === "month") {
-        state.cursor = new Date(state.cursor.getFullYear(), state.cursor.getMonth(), 1);
+        state.cursor = new Date(today.getFullYear(), today.getMonth(), 1);
       } else {
-        state.cursor = startOfWeek(state.cursor);
+        state.cursor = startOfWeek(today);
       }
       render();
     });
@@ -253,7 +188,6 @@ function bindEvents() {
 
 function render() {
   renderStaticText();
-  renderLanguageToggle();
   renderAccessState();
   renderBookingPanelState();
   renderViewToggle();
@@ -262,7 +196,7 @@ function render() {
 }
 
 function renderStaticText() {
-  document.documentElement.lang = state.language;
+  document.documentElement.lang = "ro";
   document.title = `Casa Lidia ${t("appTitle")}`;
 
   document.querySelectorAll("[data-i18n]").forEach((element) => {
@@ -277,19 +211,10 @@ function renderStaticText() {
     element.setAttribute("aria-label", t(element.dataset.i18nAria));
   });
 
-  document.querySelectorAll(".language-toggle").forEach((languageToggle) => {
-    languageToggle.setAttribute("aria-label", t("language"));
-  });
   if (elements.accessError.textContent) {
     elements.accessError.textContent = t("accessError");
   }
   populateRooms();
-}
-
-function renderLanguageToggle() {
-  elements.languageButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.language === state.language);
-  });
 }
 
 function renderViewToggle() {
@@ -790,11 +715,6 @@ function mergeBookings(currentBookings, importedBookings) {
   return mergedBookings.sort((a, b) => a.startDate.localeCompare(b.startDate));
 }
 
-function loadLanguage() {
-  const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  return TRANSLATIONS[storedLanguage] ? storedLanguage : "en";
-}
-
 function getMonthDates(date) {
   const year = date.getFullYear();
   const month = date.getMonth();
@@ -861,7 +781,7 @@ function createId() {
 }
 
 function t(key) {
-  return TRANSLATIONS[state.language][key] || TRANSLATIONS.en[key] || key;
+  return TRANSLATIONS[key] || key;
 }
 
 function getRoomName(room) {
@@ -900,7 +820,7 @@ function weekdayShort(date) {
 }
 
 function getLocale() {
-  return state.language === "ro" ? "ro-RO" : "en";
+  return "ro-RO";
 }
 
 function capitalizeFirst(value) {

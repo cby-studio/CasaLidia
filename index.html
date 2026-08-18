@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Casa Lidia Room Availability</title>
+    <title>Casa Lidia Disponibilitate camere</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -12,26 +12,22 @@
         <div class="access-card-header">
           <div>
             <p class="eyebrow">Casa Lidia</p>
-            <h1 id="access-title" data-i18n="accessTitle">Private Access</h1>
-          </div>
-          <div class="language-toggle" aria-label="Language">
-            <button class="language-button active" type="button" data-language="en">EN</button>
-            <button class="language-button" type="button" data-language="ro">RO</button>
+            <h1 id="access-title" data-i18n="accessTitle">Acces privat</h1>
           </div>
         </div>
 
         <form class="access-form" id="access-form" autocomplete="off">
           <label>
-            <span data-i18n="accessCode">Access code</span>
+            <span data-i18n="accessCode">Cod de acces</span>
             <input
               id="access-code"
               type="password"
-              placeholder="Access code"
+              placeholder="Cod de acces"
               data-i18n-placeholder="accessCodePlaceholder"
               required
             />
           </label>
-          <button class="primary-button" type="submit" data-i18n="unlock">Unlock</button>
+          <button class="primary-button" type="submit" data-i18n="unlock">Deblochează</button>
           <p class="access-error" id="access-error" role="alert"></p>
         </form>
       </div>
@@ -41,16 +37,12 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Casa Lidia</p>
-          <h1 data-i18n="appTitle">Room Availability</h1>
+          <h1 data-i18n="appTitle">Disponibilitate camere</h1>
         </div>
         <div class="header-actions">
-          <div class="language-toggle" aria-label="Language">
-            <button class="language-button active" type="button" data-language="en">EN</button>
-            <button class="language-button" type="button" data-language="ro">RO</button>
-          </div>
-          <div class="view-toggle" aria-label="Calendar view" data-i18n-aria="calendarView">
-            <button class="toggle-button active" type="button" data-view="month" data-i18n="month">Month</button>
-            <button class="toggle-button" type="button" data-view="week" data-i18n="week">Week</button>
+          <div class="view-toggle" aria-label="Vizualizare calendar" data-i18n-aria="calendarView">
+            <button class="toggle-button active" type="button" data-view="month" data-i18n="month">Lună</button>
+            <button class="toggle-button" type="button" data-view="week" data-i18n="week">Săptămână</button>
           </div>
         </div>
       </header>
@@ -58,14 +50,14 @@
       <main class="workspace">
         <section class="booking-panel" aria-labelledby="booking-title">
           <div class="panel-heading">
-            <h2 id="booking-title" data-i18n="booking">Booking</h2>
+            <h2 id="booking-title" data-i18n="booking">Rezervare</h2>
             <div class="panel-actions">
-              <button class="ghost-button" id="clear-form" type="button" data-i18n="newBooking">New</button>
+              <button class="ghost-button" id="clear-form" type="button" data-i18n="newBooking">Adaugă</button>
               <button
                 class="mobile-collapse-button"
                 id="toggle-booking-panel"
                 type="button"
-                aria-label="Minimize reservation"
+                aria-label="Minimizează rezervarea"
                 data-i18n-aria="minimizeReservation"
               >
                 -
@@ -78,50 +70,50 @@
               <input type="hidden" id="booking-id" />
 
               <label>
-                <span data-i18n="room">Room</span>
+                <span data-i18n="room">Camera</span>
                 <select id="room" required></select>
               </label>
 
               <div class="date-row">
                 <label>
-                  <span data-i18n="from">From</span>
+                  <span data-i18n="from">De la</span>
                   <input id="start-date" type="date" required />
                 </label>
                 <label>
-                  <span data-i18n="to">To</span>
+                  <span data-i18n="to">Până la</span>
                   <input id="end-date" type="date" required />
                 </label>
               </div>
 
               <label>
-                <span data-i18n="touristName">Tourist name</span>
-                <input id="guest-name" type="text" placeholder="Name" data-i18n-placeholder="namePlaceholder" required />
+                <span data-i18n="touristName">Nume turist</span>
+                <input id="guest-name" type="text" placeholder="Nume" data-i18n-placeholder="namePlaceholder" required />
               </label>
 
               <label>
-                <span data-i18n="phone">Phone</span>
-                <input id="phone" type="tel" placeholder="Phone number" data-i18n-placeholder="phonePlaceholder" required />
+                <span data-i18n="phone">Telefon</span>
+                <input id="phone" type="tel" placeholder="Număr de telefon" data-i18n-placeholder="phonePlaceholder" required />
               </label>
 
               <label>
-                <span data-i18n="people">People</span>
+                <span data-i18n="people">Persoane</span>
                 <input id="people" type="number" min="1" max="12" value="2" required />
               </label>
 
               <label>
-                <span data-i18n="notes">Notes</span>
-                <textarea id="notes" rows="3" placeholder="Optional" data-i18n-placeholder="optional"></textarea>
+                <span data-i18n="notes">Observații</span>
+                <textarea id="notes" rows="3" placeholder="Opțional" data-i18n-placeholder="optional"></textarea>
               </label>
 
               <div class="form-actions">
-                <button class="primary-button" type="submit" data-i18n="saveBooking">Save Booking</button>
-                <button class="danger-button hidden" id="delete-booking" type="button" data-i18n="deleteBooking">Delete</button>
+                <button class="primary-button" type="submit" data-i18n="saveBooking">Salvează rezervarea</button>
+                <button class="danger-button hidden" id="delete-booking" type="button" data-i18n="deleteBooking">Șterge</button>
               </div>
             </form>
 
             <div class="booking-list" aria-labelledby="bookings-title">
               <div class="booking-list-heading">
-                <h2 id="bookings-title" data-i18n="upcoming">Upcoming</h2>
+                <h2 id="bookings-title" data-i18n="upcoming">Urmează</h2>
                 <div class="data-actions">
                   <button class="ghost-button small-button" id="export-bookings" type="button" data-i18n="exportBookings">Export</button>
                   <button class="ghost-button small-button" id="import-bookings" type="button" data-i18n="importBookings">Import</button>
@@ -135,17 +127,17 @@
 
         <section class="calendar-panel" aria-labelledby="calendar-title">
           <div class="calendar-toolbar">
-            <button class="icon-button" id="previous-range" type="button" aria-label="Previous range" data-i18n-aria="previousRange">&lt;</button>
+            <button class="icon-button" id="previous-range" type="button" aria-label="Perioada anterioară" data-i18n-aria="previousRange">&lt;</button>
             <div>
               <h2 id="calendar-title"></h2>
               <p id="range-subtitle"></p>
             </div>
-            <button class="icon-button" id="next-range" type="button" aria-label="Next range" data-i18n-aria="nextRange">&gt;</button>
+            <button class="icon-button" id="next-range" type="button" aria-label="Perioada următoare" data-i18n-aria="nextRange">&gt;</button>
           </div>
 
           <div class="legend">
-            <span><i class="legend-free"></i><span data-i18n="available">Available</span></span>
-            <span><i class="legend-occupied"></i><span data-i18n="unavailable">Unavailable</span></span>
+            <span><i class="legend-free"></i><span data-i18n="available">Disponibil</span></span>
+            <span><i class="legend-occupied"></i><span data-i18n="unavailable">Indisponibil</span></span>
           </div>
 
           <div class="calendar-scroll">

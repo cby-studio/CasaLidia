@@ -1,11 +1,11 @@
-# Casa Lidia Room Availability
+# Casa Lidia Disponibilitate Camere
 
 A small static web app for managing availability across 8 bed and breakfast rooms.
 
 ## Features
 
 - Monthly and weekly availability calendars
-- English and Romanian language switch
+- Romanian-only interface
 - Passcode access screen for casual privacy
 - Mobile-friendly layout with a minimizable reservation panel
 - Eight fixed rooms, including `Casuta`
