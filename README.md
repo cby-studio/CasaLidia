@@ -52,10 +52,6 @@ Recommended build settings:
 - Deploy command: `npm run deploy:cloudflare`
 - Root directory: leave empty
 
-Add this Cloudflare build secret:
-
-- `CLOUDFLARE_KV_NAMESPACE_ID`
-
 The GitHub Actions workflow is kept as a manual fallback only. It does not deploy automatically on push, because that creates Wrangler-only versions in Cloudflare without a GitHub build link.
 
 The `.assetsignore` file keeps `node_modules`, backend files, and data files out of Cloudflare's static asset upload.
