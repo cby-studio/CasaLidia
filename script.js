@@ -80,7 +80,7 @@ const TRANSLATIONS = {
     month: "Lună",
     week: "Săptămână",
     booking: "Rezervare",
-    newBooking: "Nou",
+    newBooking: "Adaugă",
     room: "Camera",
     from: "De la",
     to: "Până la",
