@@ -40,9 +40,23 @@ The backend saves reservations in `data/bookings.json`. That file is ignored by 
 
 By default, the server binds to `127.0.0.1`. Set `HOST=0.0.0.0` only when you intentionally want to expose it beyond your machine.
 
+## Deploy
+
+This repo includes a GitHub Actions workflow that deploys to Cloudflare Workers on every push to `main`.
+
+Add these GitHub repository secrets:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+Then every push to `main` will run `npm run check` and deploy with Wrangler.
+
+The `.assetsignore` file keeps `node_modules`, backend files, and data files out of Cloudflare's static asset upload.
+
 ## Files
 
 - `index.html` - app markup
 - `styles.css` - layout and visual design
 - `script.js` - booking, calendar, and local storage logic
 - `server.js` - small Node backend and static file server
+- `wrangler.jsonc` - Cloudflare Workers deploy configuration
