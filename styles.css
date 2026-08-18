@@ -725,11 +725,6 @@ textarea:focus {
     flex-direction: column;
   }
 
-  .date-row,
-  .form-actions {
-    grid-template-columns: 1fr;
-  }
-
   .topbar {
     gap: 8px;
     margin-bottom: 10px;
@@ -744,6 +739,47 @@ textarea:focus {
     padding: 8px;
   }
 
+  .panel-heading {
+    gap: 8px;
+  }
+
+  .panel-actions {
+    gap: 6px;
+  }
+
+  form {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  label {
+    gap: 4px;
+    font-size: 0.72rem;
+  }
+
+  input,
+  select {
+    height: 34px;
+    padding: 0 8px;
+    font-size: 0.86rem;
+  }
+
+  textarea {
+    min-height: 52px;
+    padding: 7px 8px;
+    font-size: 0.86rem;
+  }
+
+  .date-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .form-actions {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
   .toggle-button,
   .ghost-button,
   .primary-button,
@@ -752,6 +788,33 @@ textarea:focus {
   .mobile-collapse-button {
     min-height: 34px;
     border-radius: 6px;
+  }
+
+  .primary-button,
+  .ghost-button,
+  .danger-button {
+    padding: 0 10px;
+    font-size: 0.84rem;
+  }
+
+  .booking-list {
+    margin-top: 12px;
+    padding-top: 10px;
+  }
+
+  #booking-list {
+    gap: 6px;
+    max-height: 170px;
+    margin-top: 8px;
+  }
+
+  .booking-item {
+    min-height: 56px;
+    padding: 8px;
+  }
+
+  .booking-item span {
+    font-size: 0.72rem;
   }
 
   .view-toggle {
