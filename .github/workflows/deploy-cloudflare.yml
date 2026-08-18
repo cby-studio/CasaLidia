@@ -33,4 +33,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --message "GitHub Actions: ${{ github.sha }}" --tag "${{ github.sha }}"
+          command: >-
+            deploy --message "GitHub Actions: ${{ github.sha }}" --tag "${{ github.sha }}"
