@@ -5,8 +5,15 @@ const ROOMS = Array.from({ length: 7 }, (_, index) => ({
 
 const STORAGE_KEY = "casa-lidia-bookings";
 const LANGUAGE_STORAGE_KEY = "casa-lidia-language";
+const ACCESS_STORAGE_KEY = "casa-lidia-access-granted";
+const ACCESS_CODE_HASH = "44b350ed060a41a1af57c7d07ed0aca3039777404d3a09d0380e68b6977d9874";
 const TRANSLATIONS = {
   en: {
+    accessTitle: "Private Access",
+    accessCode: "Access code",
+    accessCodePlaceholder: "Access code",
+    unlock: "Unlock",
+    accessError: "The access code is not correct.",
     appTitle: "Room Availability",
     calendarView: "Calendar view",
     language: "Language",
@@ -29,6 +36,8 @@ const TRANSLATIONS = {
     upcoming: "Upcoming",
     previousRange: "Previous range",
     nextRange: "Next range",
+    minimizeReservation: "Minimize reservation",
+    expandReservation: "Expand reservation",
     available: "Available",
     unavailable: "Unavailable",
     weeklyCalendar: "Weekly Calendar",
@@ -42,6 +51,11 @@ const TRANSLATIONS = {
     peoplePlural: "people",
   },
   ro: {
+    accessTitle: "Acces privat",
+    accessCode: "Cod de acces",
+    accessCodePlaceholder: "Cod de acces",
+    unlock: "Deblochează",
+    accessError: "Codul de acces nu este corect.",
     appTitle: "Disponibilitate camere",
     calendarView: "Vizualizare calendar",
     language: "Limbă",
@@ -64,6 +78,8 @@ const TRANSLATIONS = {
     upcoming: "Urmează",
     previousRange: "Perioada anterioară",
     nextRange: "Perioada următoare",
+    minimizeReservation: "Minimizează rezervarea",
+    expandReservation: "Extinde rezervarea",
     available: "Disponibil",
     unavailable: "Indisponibil",
     weeklyCalendar: "Calendar săptămânal",
@@ -85,9 +101,16 @@ const state = {
   bookings: loadBookings(),
   selectedDate: toISODate(today),
   language: loadLanguage(),
+  accessGranted: sessionStorage.getItem(ACCESS_STORAGE_KEY) === "true",
+  bookingPanelCollapsed: window.matchMedia("(max-width: 920px)").matches,
 };
 
 const elements = {
+  accessScreen: document.querySelector("#access-screen"),
+  appShell: document.querySelector("#app-shell"),
+  accessForm: document.querySelector("#access-form"),
+  accessCode: document.querySelector("#access-code"),
+  accessError: document.querySelector("#access-error"),
   languageButtons: document.querySelectorAll(".language-button"),
   viewButtons: document.querySelectorAll(".toggle-button"),
   calendarGrid: document.querySelector("#calendar-grid"),
@@ -105,6 +128,8 @@ const elements = {
   people: document.querySelector("#people"),
   notes: document.querySelector("#notes"),
   clearForm: document.querySelector("#clear-form"),
+  toggleBookingPanel: document.querySelector("#toggle-booking-panel"),
+  bookingPanel: document.querySelector(".booking-panel"),
   deleteBooking: document.querySelector("#delete-booking"),
   bookingList: document.querySelector("#booking-list"),
   toast: document.querySelector("#toast"),
@@ -134,6 +159,11 @@ function bindEvents() {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, state.language);
       render();
     });
+  });
+
+  elements.accessForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    unlockApp();
   });
 
   elements.viewButtons.forEach((button) => {
@@ -175,13 +205,19 @@ function bindEvents() {
     saveBooking();
   });
 
-  elements.clearForm.addEventListener("click", resetForm);
+  elements.clearForm.addEventListener("click", () => {
+    resetForm();
+    expandBookingPanel();
+  });
+  elements.toggleBookingPanel.addEventListener("click", toggleBookingPanel);
   elements.deleteBooking.addEventListener("click", deleteSelectedBooking);
 }
 
 function render() {
   renderStaticText();
   renderLanguageToggle();
+  renderAccessState();
+  renderBookingPanelState();
   renderViewToggle();
   renderCalendar();
   renderBookingList();
@@ -203,8 +239,12 @@ function renderStaticText() {
     element.setAttribute("aria-label", t(element.dataset.i18nAria));
   });
 
-  const languageToggle = document.querySelector(".language-toggle");
-  languageToggle.setAttribute("aria-label", t("language"));
+  document.querySelectorAll(".language-toggle").forEach((languageToggle) => {
+    languageToggle.setAttribute("aria-label", t("language"));
+  });
+  if (elements.accessError.textContent) {
+    elements.accessError.textContent = t("accessError");
+  }
   populateRooms();
 }
 
@@ -218,6 +258,21 @@ function renderViewToggle() {
   elements.viewButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.view === state.view);
   });
+}
+
+function renderAccessState() {
+  elements.accessScreen.classList.toggle("hidden", state.accessGranted);
+  elements.appShell.classList.toggle("hidden", !state.accessGranted);
+}
+
+function renderBookingPanelState() {
+  elements.bookingPanel.classList.toggle("collapsed", state.bookingPanelCollapsed);
+  elements.toggleBookingPanel.textContent = state.bookingPanelCollapsed ? "+" : "-";
+  elements.toggleBookingPanel.setAttribute(
+    "aria-label",
+    t(state.bookingPanelCollapsed ? "expandReservation" : "minimizeReservation"),
+  );
+  elements.toggleBookingPanel.setAttribute("aria-expanded", String(!state.bookingPanelCollapsed));
 }
 
 function renderCalendar() {
@@ -370,7 +425,35 @@ function handleCalendarCellClick(button) {
   elements.people.value = "2";
   elements.notes.value = "";
   elements.deleteBooking.classList.add("hidden");
+  expandBookingPanel();
   elements.guestName.focus();
+}
+
+async function unlockApp() {
+  const accessCodeHash = await sha256Hex(elements.accessCode.value.trim());
+
+  if (accessCodeHash !== ACCESS_CODE_HASH) {
+    elements.accessError.textContent = t("accessError");
+    elements.accessCode.select();
+    return;
+  }
+
+  state.accessGranted = true;
+  sessionStorage.setItem(ACCESS_STORAGE_KEY, "true");
+  elements.accessError.textContent = "";
+  render();
+}
+
+function toggleBookingPanel() {
+  state.bookingPanelCollapsed = !state.bookingPanelCollapsed;
+  renderBookingPanelState();
+}
+
+function expandBookingPanel() {
+  if (!state.bookingPanelCollapsed) return;
+
+  state.bookingPanelCollapsed = false;
+  renderBookingPanelState();
 }
 
 function saveBooking() {
@@ -424,6 +507,7 @@ function editBooking(id) {
   elements.people.value = booking.people;
   elements.notes.value = booking.notes || "";
   elements.deleteBooking.classList.remove("hidden");
+  expandBookingPanel();
   focusVisibleRange(booking);
 }
 
@@ -608,6 +692,15 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value).replaceAll("\n", " ");
+}
+
+async function sha256Hex(value) {
+  const encodedValue = new TextEncoder().encode(value);
+  const digest = await window.crypto.subtle.digest("SHA-256", encodedValue);
+
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function showToast(message) {

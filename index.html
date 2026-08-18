@@ -7,7 +7,37 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <section class="access-screen" id="access-screen" aria-labelledby="access-title">
+      <div class="access-card">
+        <div class="access-card-header">
+          <div>
+            <p class="eyebrow">Casa Lidia</p>
+            <h1 id="access-title" data-i18n="accessTitle">Private Access</h1>
+          </div>
+          <div class="language-toggle" aria-label="Language">
+            <button class="language-button active" type="button" data-language="en">EN</button>
+            <button class="language-button" type="button" data-language="ro">RO</button>
+          </div>
+        </div>
+
+        <form class="access-form" id="access-form" autocomplete="off">
+          <label>
+            <span data-i18n="accessCode">Access code</span>
+            <input
+              id="access-code"
+              type="password"
+              placeholder="Access code"
+              data-i18n-placeholder="accessCodePlaceholder"
+              required
+            />
+          </label>
+          <button class="primary-button" type="submit" data-i18n="unlock">Unlock</button>
+          <p class="access-error" id="access-error" role="alert"></p>
+        </form>
+      </div>
+    </section>
+
+    <div class="app-shell hidden" id="app-shell">
       <header class="topbar">
         <div>
           <p class="eyebrow">Casa Lidia</p>
@@ -29,57 +59,70 @@
         <section class="booking-panel" aria-labelledby="booking-title">
           <div class="panel-heading">
             <h2 id="booking-title" data-i18n="booking">Booking</h2>
-            <button class="ghost-button" id="clear-form" type="button" data-i18n="newBooking">New</button>
+            <div class="panel-actions">
+              <button class="ghost-button" id="clear-form" type="button" data-i18n="newBooking">New</button>
+              <button
+                class="mobile-collapse-button"
+                id="toggle-booking-panel"
+                type="button"
+                aria-label="Minimize reservation"
+                data-i18n-aria="minimizeReservation"
+              >
+                -
+              </button>
+            </div>
           </div>
 
-          <form id="booking-form" autocomplete="off">
-            <input type="hidden" id="booking-id" />
+          <div class="booking-panel-body" id="booking-panel-body">
+            <form id="booking-form" autocomplete="off">
+              <input type="hidden" id="booking-id" />
 
-            <label>
-              <span data-i18n="room">Room</span>
-              <select id="room" required></select>
-            </label>
-
-            <div class="date-row">
               <label>
-                <span data-i18n="from">From</span>
-                <input id="start-date" type="date" required />
+                <span data-i18n="room">Room</span>
+                <select id="room" required></select>
               </label>
+
+              <div class="date-row">
+                <label>
+                  <span data-i18n="from">From</span>
+                  <input id="start-date" type="date" required />
+                </label>
+                <label>
+                  <span data-i18n="to">To</span>
+                  <input id="end-date" type="date" required />
+                </label>
+              </div>
+
               <label>
-                <span data-i18n="to">To</span>
-                <input id="end-date" type="date" required />
+                <span data-i18n="touristName">Tourist name</span>
+                <input id="guest-name" type="text" placeholder="Name" data-i18n-placeholder="namePlaceholder" required />
               </label>
+
+              <label>
+                <span data-i18n="phone">Phone</span>
+                <input id="phone" type="tel" placeholder="Phone number" data-i18n-placeholder="phonePlaceholder" required />
+              </label>
+
+              <label>
+                <span data-i18n="people">People</span>
+                <input id="people" type="number" min="1" max="12" value="2" required />
+              </label>
+
+              <label>
+                <span data-i18n="notes">Notes</span>
+                <textarea id="notes" rows="3" placeholder="Optional" data-i18n-placeholder="optional"></textarea>
+              </label>
+
+              <div class="form-actions">
+                <button class="primary-button" type="submit" data-i18n="saveBooking">Save Booking</button>
+                <button class="danger-button hidden" id="delete-booking" type="button" data-i18n="deleteBooking">Delete</button>
+              </div>
+            </form>
+
+            <div class="booking-list" aria-labelledby="bookings-title">
+              <h2 id="bookings-title" data-i18n="upcoming">Upcoming</h2>
+              <div id="booking-list"></div>
             </div>
-
-            <label>
-              <span data-i18n="touristName">Tourist name</span>
-              <input id="guest-name" type="text" placeholder="Name" data-i18n-placeholder="namePlaceholder" required />
-            </label>
-
-            <label>
-              <span data-i18n="phone">Phone</span>
-              <input id="phone" type="tel" placeholder="Phone number" data-i18n-placeholder="phonePlaceholder" required />
-            </label>
-
-            <label>
-              <span data-i18n="people">People</span>
-              <input id="people" type="number" min="1" max="12" value="2" required />
-            </label>
-
-            <label>
-              <span data-i18n="notes">Notes</span>
-              <textarea id="notes" rows="3" placeholder="Optional" data-i18n-placeholder="optional"></textarea>
-            </label>
-
-            <div class="form-actions">
-              <button class="primary-button" type="submit" data-i18n="saveBooking">Save Booking</button>
-              <button class="danger-button hidden" id="delete-booking" type="button" data-i18n="deleteBooking">Delete</button>
-            </div>
-          </form>
-
-          <div class="booking-list" aria-labelledby="bookings-title">
-            <h2 id="bookings-title" data-i18n="upcoming">Upcoming</h2>
-            <div id="booking-list"></div>
           </div>
         </section>
 

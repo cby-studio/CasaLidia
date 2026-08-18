@@ -6,6 +6,8 @@ A small static web app for managing availability across 7 bed and breakfast room
 
 - Monthly and weekly availability calendars
 - English and Romanian language switch
+- Passcode access screen for casual privacy
+- Mobile-friendly layout with a minimizable reservation panel
 - Seven fixed rooms
 - Single-day and multi-day bookings
 - Tourist details: name, phone number, number of people, and notes
@@ -19,6 +21,8 @@ A small static web app for managing availability across 7 bed and breakfast room
 Open `index.html` in a browser.
 
 No build step or dependencies are required.
+
+This is a static app, so the access screen is intended for casual privacy. For strong protection on a public website, use server-side authentication.
 
 ## Files
 
