@@ -1,7 +1,13 @@
-const ROOMS = Array.from({ length: 7 }, (_, index) => ({
-  id: `room-${index + 1}`,
-  number: index + 1,
-}));
+const ROOMS = [
+  ...Array.from({ length: 7 }, (_, index) => ({
+    id: `room-${index + 1}`,
+    number: index + 1,
+  })),
+  {
+    id: "casuta",
+    name: "Casuta",
+  },
+];
 
 const STORAGE_KEY = "casa-lidia-bookings";
 const LANGUAGE_STORAGE_KEY = "casa-lidia-language";
@@ -643,6 +649,10 @@ function t(key) {
 }
 
 function getRoomName(room) {
+  if (room.name) {
+    return room.name;
+  }
+
   return `${t("room")} ${room.number}`;
 }
 
