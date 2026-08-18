@@ -23,6 +23,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   background:
     linear-gradient(rgba(245, 247, 246, 0.92), rgba(245, 247, 246, 0.96)),
     url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='160' height='160' fill='%23f5f7f6'/%3E%3Cpath d='M28 76c16-24 51-24 68-1 9 12 25 15 37 7' fill='none' stroke='%23d8e7e1' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='45' cy='45' r='9' fill='%23bfd3ca'/%3E%3Ccircle cx='113' cy='112' r='12' fill='%23d7b98b'/%3E%3C/svg%3E");
@@ -423,6 +425,7 @@ textarea:focus {
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  -webkit-overflow-scrolling: touch;
 }
 
 .calendar-grid {
@@ -448,15 +451,16 @@ textarea:focus {
 .header-cell,
 .room-cell {
   position: sticky;
-  z-index: 2;
   display: flex;
   align-items: center;
   background: #f7faf9;
   font-weight: 800;
+  overflow: hidden;
 }
 
 .header-cell {
   top: 0;
+  z-index: 4;
   justify-content: center;
   min-height: 48px;
   padding: 7px;
@@ -466,14 +470,16 @@ textarea:focus {
 
 .corner-cell {
   left: 0;
-  z-index: 4;
+  z-index: 7;
 }
 
 .room-cell {
   left: 0;
+  z-index: 5;
   min-height: 64px;
   padding: 10px;
   color: var(--ink);
+  box-shadow: 8px 0 12px rgba(23, 33, 29, 0.08);
 }
 
 .day-cell {
@@ -483,6 +489,7 @@ textarea:focus {
   border: 0;
   padding: 0;
   text-align: left;
+  overflow: hidden;
 }
 
 .day-button {
@@ -497,6 +504,7 @@ textarea:focus {
   background: var(--free);
   color: var(--ink);
   text-align: left;
+  overflow: hidden;
 }
 
 .day-button:hover,
@@ -517,6 +525,9 @@ textarea:focus {
 .day-number {
   font-size: 0.78rem;
   font-weight: 850;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cell-guest {
@@ -528,6 +539,9 @@ textarea:focus {
 .cell-meta {
   font-size: 0.68rem;
   opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .booking-span {
@@ -671,17 +685,57 @@ textarea:focus {
   }
 
   .calendar-grid.month {
-    min-width: 720px;
-    grid-template-columns: 94px repeat(var(--day-count), minmax(34px, 1fr));
+    width: max-content;
+    min-width: 100%;
+    grid-template-columns: 132px repeat(var(--day-count), 64px);
   }
 
   .calendar-grid.week {
-    min-width: 760px;
-    grid-template-columns: 94px repeat(7, minmax(95px, 1fr));
+    width: max-content;
+    min-width: 100%;
+    grid-template-columns: 132px repeat(7, 112px);
+  }
+
+  .header-cell {
+    min-height: 44px;
+    padding: 6px;
+    font-size: 0.9rem;
   }
 
   .room-cell,
-  .day-button {
+  .day-cell,
+  .day-button,
+  .booking-span {
     min-height: 58px;
+  }
+
+  .room-cell {
+    padding: 8px;
+    font-size: 0.92rem;
+    line-height: 1.15;
+  }
+
+  .day-button {
+    padding: 7px 6px;
+  }
+
+  .day-number {
+    font-size: 0.8rem;
+  }
+
+  .cell-meta {
+    font-size: 0.72rem;
+  }
+
+  .booking-span {
+    padding: 7px 9px;
+  }
+
+  .booking-span strong {
+    font-size: 0.86rem;
+  }
+
+  .booking-span span {
+    font-size: 0.7rem;
   }
 }
