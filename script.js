@@ -88,6 +88,7 @@ const elements = {
   calendarGrid: document.querySelector("#calendar-grid"),
   calendarTitle: document.querySelector("#calendar-title"),
   rangeSubtitle: document.querySelector("#range-subtitle"),
+  occupancySummary: document.querySelector("#occupancy-summary"),
   previousRange: document.querySelector("#previous-range"),
   nextRange: document.querySelector("#next-range"),
   form: document.querySelector("#booking-form"),
@@ -252,6 +253,7 @@ function renderCalendar() {
   elements.rangeSubtitle.textContent = `${formatReadableDate(rangeStart)} - ${formatReadableDate(
     rangeEnd,
   )}`;
+  elements.occupancySummary.innerHTML = renderOccupancySummary(dates);
 
   const fragments = [];
   fragments.push(
@@ -261,14 +263,14 @@ function renderCalendar() {
   );
 
   dates.forEach((date, dateIndex) => {
-    const label =
-      state.view === "month"
-        ? `${date.getDate()}`
-        : `${weekdayShort(date)} ${date.getDate()}`;
+    const dayName = weekdayShort(date);
     fragments.push(
       `<div class="grid-cell header-cell" role="columnheader" style="grid-row: 1; grid-column: ${
         dateIndex + 2
-      };">${label}</div>`,
+      };">
+        <span class="header-weekday">${dayName}</span>
+        <span class="header-day">${date.getDate()}</span>
+      </div>`,
     );
   });
 
@@ -563,6 +565,47 @@ function getVisibleBookings(roomId, rangeStart, rangeEnd) {
   );
 }
 
+function renderOccupancySummary(dates) {
+  const weekGroups = getVisibleWeekGroups(dates);
+
+  return weekGroups
+    .map(
+      (weekDates) => `
+        <span class="occupancy-pill">
+          ${formatCompactDateRange(weekDates[0], weekDates[weekDates.length - 1])}:
+          <strong>${calculateOccupancyPercent(weekDates)}%</strong>
+        </span>
+      `,
+    )
+    .join("");
+}
+
+function calculateOccupancyPercent(dates) {
+  const occupiedNights = ROOMS.reduce(
+    (total, room) =>
+      total + dates.filter((date) => Boolean(findBooking(room.id, date))).length,
+    0,
+  );
+  const totalNights = ROOMS.length * dates.length;
+
+  return totalNights === 0 ? 0 : Math.round((occupiedNights / totalNights) * 100);
+}
+
+function getVisibleWeekGroups(dates) {
+  return dates.reduce((groups, date) => {
+    const weekKey = toISODate(startOfWeek(date));
+    const currentGroup = groups.find((group) => group.weekKey === weekKey);
+
+    if (currentGroup) {
+      currentGroup.dates.push(date);
+    } else {
+      groups.push({ weekKey, dates: [date] });
+    }
+
+    return groups;
+  }, []).map((group) => group.dates);
+}
+
 async function hydrateBookingsFromServer() {
   const localBookings = loadBookings();
   const serverBookings = await fetchServerBookings();
@@ -813,6 +856,15 @@ function formatReadableDate(date) {
 
 function formatISODate(value) {
   return formatReadableDate(parseISODate(value));
+}
+
+function formatCompactDateRange(startDate, endDate) {
+  const formatter = new Intl.DateTimeFormat(getLocale(), {
+    day: "numeric",
+    month: "short",
+  });
+
+  return `${formatter.format(startDate)} - ${formatter.format(endDate)}`;
 }
 
 function weekdayShort(date) {

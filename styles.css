@@ -386,6 +386,30 @@ textarea:focus {
   font-size: 0.86rem;
 }
 
+.occupancy-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  min-height: 28px;
+  margin-top: 4px;
+  color: var(--accent-dark);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.occupancy-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  padding: 3px 7px;
+  border: 1px solid rgba(47, 111, 97, 0.2);
+  border-radius: 999px;
+  background: var(--free);
+  white-space: nowrap;
+}
+
 .icon-button {
   width: 42px;
   min-width: 42px;
@@ -469,11 +493,32 @@ textarea:focus {
 .header-cell {
   top: 0;
   z-index: 4;
+  flex-direction: column;
   justify-content: center;
   min-height: 48px;
   padding: 7px;
   color: var(--muted);
   text-align: center;
+}
+
+.header-weekday,
+.header-day {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-weekday {
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.header-day {
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 900;
 }
 
 .corner-cell {
@@ -614,8 +659,8 @@ textarea:focus {
 
 @media (max-width: 920px) {
   .app-shell {
-    width: min(100vw - 20px, 760px);
-    padding: 14px 0;
+    width: min(100vw - 12px, 760px);
+    padding: 10px 0;
   }
 
   .topbar {
@@ -668,11 +713,11 @@ textarea:focus {
 
 @media (max-width: 560px) {
   .access-screen {
-    padding: 12px;
+    padding: 8px;
   }
 
   .access-card {
-    padding: 16px;
+    padding: 12px;
   }
 
   .access-card-header {
@@ -686,70 +731,118 @@ textarea:focus {
   }
 
   .topbar {
-    gap: 12px;
+    gap: 8px;
+    margin-bottom: 10px;
   }
 
   h1 {
-    font-size: 1.55rem;
+    font-size: 1.3rem;
   }
 
   .calendar-panel,
   .booking-panel {
-    padding: 12px;
+    padding: 8px;
+  }
+
+  .toggle-button,
+  .ghost-button,
+  .primary-button,
+  .danger-button,
+  .icon-button,
+  .mobile-collapse-button {
+    min-height: 34px;
+    border-radius: 6px;
+  }
+
+  .view-toggle {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .calendar-toolbar {
+    min-height: 42px;
+  }
+
+  .icon-button {
+    width: 36px;
+    min-width: 36px;
+    font-size: 1.35rem;
+  }
+
+  #range-subtitle {
+    font-size: 0.76rem;
+  }
+
+  .occupancy-summary {
+    gap: 4px;
+    min-height: 22px;
+    font-size: 0.66rem;
+  }
+
+  .occupancy-pill {
+    min-height: 20px;
+    padding: 2px 5px;
   }
 
   .calendar-grid.month {
     width: max-content;
     min-width: 100%;
-    grid-template-columns: 132px repeat(var(--day-count), 64px);
+    grid-template-columns: 104px repeat(var(--day-count), 48px);
   }
 
   .calendar-grid.week {
     width: max-content;
     min-width: 100%;
-    grid-template-columns: 132px repeat(7, 112px);
+    grid-template-columns: 104px repeat(7, 86px);
   }
 
   .header-cell {
-    min-height: 44px;
-    padding: 6px;
-    font-size: 0.9rem;
+    min-height: 42px;
+    padding: 4px;
+  }
+
+  .header-weekday {
+    font-size: 0.58rem;
+  }
+
+  .header-day {
+    font-size: 0.76rem;
   }
 
   .room-cell,
   .day-cell,
   .day-button,
   .booking-span {
-    min-height: 58px;
+    min-height: 50px;
   }
 
   .room-cell {
-    padding: 8px;
-    font-size: 0.92rem;
+    padding: 6px;
+    font-size: 0.76rem;
     line-height: 1.15;
   }
 
   .day-button {
-    padding: 7px 6px;
+    padding: 5px;
+    gap: 2px;
   }
 
   .day-number {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
 
   .cell-meta {
-    font-size: 0.72rem;
+    font-size: 0.6rem;
   }
 
   .booking-span {
-    padding: 7px 9px;
+    padding: 5px 7px;
   }
 
   .booking-span strong {
-    font-size: 0.86rem;
+    font-size: 0.74rem;
   }
 
   .booking-span span {
-    font-size: 0.7rem;
+    font-size: 0.58rem;
   }
 }
