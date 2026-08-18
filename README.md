@@ -48,10 +48,13 @@ Add these GitHub repository secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_KV_NAMESPACE_ID`
 
 Then every push to `main` will run `npm run check` and deploy with Wrangler.
 
 The `.assetsignore` file keeps `node_modules`, backend files, and data files out of Cloudflare's static asset upload.
+
+The Cloudflare deployment uses a Worker API at `/api/bookings` and stores reservations in the KV namespace bound as `BOOKINGS_KV`.
 
 ## Files
 
@@ -59,4 +62,5 @@ The `.assetsignore` file keeps `node_modules`, backend files, and data files out
 - `styles.css` - layout and visual design
 - `script.js` - booking, calendar, and local storage logic
 - `server.js` - small Node backend and static file server
+- `src/worker.js` - Cloudflare Worker API for deployed bookings
 - `wrangler.jsonc` - Cloudflare Workers deploy configuration

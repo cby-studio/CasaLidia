@@ -23,6 +23,11 @@ jobs:
       - name: Check JavaScript
         run: npm run check
 
+      - name: Configure Cloudflare KV
+        run: node scripts/configure-cloudflare.mjs
+        env:
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+
       - name: Deploy
         uses: cloudflare/wrangler-action@v4
         with:

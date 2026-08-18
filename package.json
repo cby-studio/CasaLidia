@@ -5,7 +5,7 @@
   "description": "Casa Lidia room availability app with a small file-backed Node backend.",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check script.js && node --check server.js"
+    "check": "node --check script.js && node --check server.js && node --check src/worker.js && node --check scripts/configure-cloudflare.mjs"
   },
   "engines": {
     "node": ">=18"
