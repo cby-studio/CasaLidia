@@ -515,9 +515,38 @@ textarea:focus {
   left: 0;
   z-index: 5;
   min-height: 64px;
-  padding: 10px;
   color: var(--ink);
   box-shadow: 8px 0 12px rgba(23, 33, 29, 0.08);
+}
+
+.room-cell.filtered {
+  background: #e4f0eb;
+  box-shadow:
+    inset 4px 0 0 var(--accent),
+    8px 0 12px rgba(23, 33, 29, 0.08);
+}
+
+.room-filter-button {
+  width: 100%;
+  min-height: 64px;
+  padding: 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-weight: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.room-filter-button:hover,
+.room-filter-button:focus {
+  outline: 2px solid rgba(47, 111, 97, 0.38);
+  outline-offset: -2px;
+}
+
+.room-filter-button[aria-pressed="true"] {
+  color: var(--accent-dark);
 }
 
 .day-cell {

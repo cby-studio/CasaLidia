@@ -70,6 +70,7 @@ const state = {
   accessGranted: sessionStorage.getItem(ACCESS_STORAGE_KEY) === "true",
   accessHash: sessionStorage.getItem(ACCESS_HASH_STORAGE_KEY) || "",
   bookingPanelCollapsed: window.matchMedia("(max-width: 920px)").matches,
+  selectedRoomFilter: "",
   serverAvailable: false,
 };
 
@@ -230,6 +231,7 @@ function renderBookingPanelState() {
 
 function renderCalendar() {
   const dates = state.view === "month" ? getMonthDates(state.cursor) : getWeekDates(state.cursor);
+  const visibleRooms = getVisibleRooms();
   const rangeStart = dates[0];
   const rangeEnd = dates[dates.length - 1];
   const rangeStartISO = toISODate(rangeStart);
@@ -242,7 +244,7 @@ function renderCalendar() {
   elements.rangeSubtitle.textContent = `${formatReadableDate(rangeStart)} - ${formatReadableDate(
     rangeEnd,
   )}`;
-  elements.occupancySummary.innerHTML = renderOccupancySummary(dates);
+  elements.occupancySummary.innerHTML = renderOccupancySummary(dates, visibleRooms);
 
   const fragments = [];
   fragments.push(
@@ -263,11 +265,22 @@ function renderCalendar() {
     );
   });
 
-  ROOMS.forEach((room, roomIndex) => {
+  visibleRooms.forEach((room, roomIndex) => {
     const gridRow = roomIndex + 2;
     const roomName = getRoomName(room);
+    const isFilteredRoom = state.selectedRoomFilter === room.id;
     fragments.push(
-      `<div class="grid-cell room-cell" role="rowheader" style="grid-row: ${gridRow}; grid-column: 1;">${roomName}</div>`,
+      `<div class="grid-cell room-cell ${isFilteredRoom ? "filtered" : ""}" role="rowheader" style="grid-row: ${gridRow}; grid-column: 1;">
+        <button
+          class="room-filter-button"
+          type="button"
+          data-room-id="${room.id}"
+          aria-pressed="${String(isFilteredRoom)}"
+          title="${escapeAttribute(roomName)}"
+        >
+          ${escapeHtml(roomName)}
+        </button>
+      </div>`,
     );
 
     dates.forEach((date, dateIndex) => {
@@ -331,6 +344,20 @@ function renderCalendar() {
   elements.calendarGrid.querySelectorAll(".booking-span").forEach((button) => {
     button.addEventListener("click", () => editBooking(button.dataset.bookingId));
   });
+  elements.calendarGrid.querySelectorAll(".room-filter-button").forEach((button) => {
+    button.addEventListener("click", () => toggleRoomFilter(button.dataset.roomId));
+  });
+}
+
+function getVisibleRooms() {
+  return state.selectedRoomFilter
+    ? ROOMS.filter((room) => room.id === state.selectedRoomFilter)
+    : ROOMS;
+}
+
+function toggleRoomFilter(roomId) {
+  state.selectedRoomFilter = state.selectedRoomFilter === roomId ? "" : roomId;
+  render();
 }
 
 function renderBookingList() {
@@ -523,7 +550,7 @@ function getVisibleBookings(roomId, rangeStart, rangeEnd) {
   );
 }
 
-function renderOccupancySummary(dates) {
+function renderOccupancySummary(dates, rooms = ROOMS) {
   const weekGroups = getVisibleWeekGroups(dates);
 
   return weekGroups
@@ -531,20 +558,20 @@ function renderOccupancySummary(dates) {
       (weekDates) => `
         <span class="occupancy-pill">
           ${formatCompactDateRange(weekDates[0], weekDates[weekDates.length - 1])}:
-          <strong>${calculateOccupancyPercent(weekDates)}%</strong>
+          <strong>${calculateOccupancyPercent(weekDates, rooms)}%</strong>
         </span>
       `,
     )
     .join("");
 }
 
-function calculateOccupancyPercent(dates) {
-  const occupiedNights = ROOMS.reduce(
+function calculateOccupancyPercent(dates, rooms = ROOMS) {
+  const occupiedNights = rooms.reduce(
     (total, room) =>
       total + dates.filter((date) => Boolean(findBooking(room.id, date))).length,
     0,
   );
-  const totalNights = ROOMS.length * dates.length;
+  const totalNights = rooms.length * dates.length;
 
   return totalNights === 0 ? 0 : Math.round((occupiedNights / totalNights) * 100);
 }
